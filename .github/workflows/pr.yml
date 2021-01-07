@@ -10,7 +10,7 @@ jobs:
           :warning: Warning: renovate-config-validator spotted that some files need a config migration.
           Checks don't break on warnings but you should be aware the warning and solve them, if possible.
           
-          ```
+          \`\`\`
           --- a.json-original	2021-01-07 23:03:55.107563000 +0000
           +++ a.json-migrated	2021-01-07 23:03:55.106563000 +0000
           @@ -4,7 +4,7 @@
@@ -22,8 +22,8 @@ jobs:
                     "updateLockFiles": true,
                     "prConcurrentLimit": 0,
                     "prHourlyLimit": 0,
-          ```
-          ```
+          \`\`\`
+          \`\`\`
           --- ux.json-original	2021-01-07 23:04:03.068103000 +0000
           +++ ux.json-migrated	2021-01-07 23:04:03.067103000 +0000
           @@ -4,7 +4,7 @@
@@ -35,7 +35,7 @@ jobs:
                     "updateLockFiles": true,
                     "prConcurrentLimit": 0,
                     "prHourlyLimit": 0,
-          ```
+          \`\`\`
           Have a nice day!
           EOF
       - name: comment PR
