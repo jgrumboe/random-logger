@@ -6,7 +6,7 @@ jobs:
     steps:
       - name: create string
         run: |
-          MY_STRING=$(cat << EOF
+          cat - > diffoutput.txt << EOF
            --- a.json-original	2021-01-07 23:03:55.107563000 +0000
            +++ a.json-migrated	2021-01-07 23:03:55.106563000 +0000
            @@ -4,7 +4,7 @@
@@ -19,12 +19,9 @@ jobs:
                      "prConcurrentLimit": 0,
                      "prHourlyLimit": 0,
           EOF
-          )
-          echo "MY_STRING<<EOF" >> $GITHUB_ENV
-          echo "$MY_STRING" >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
-        id: my_string
-      - name: display string
-        run: |
-          echo "The string is: ${{ env.MY_STRING }}"
-
+      - name: comment PR
+        uses: machine-learning-apps/pr-comment@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          path: diffoutput.txt
