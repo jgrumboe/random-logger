@@ -1,37 +1,46 @@
 name: PR
 on: pull_request
 jobs:
-  Build-and-check-for-vulnerabilities:
-    runs-on: ubuntu-18.04
+  test:
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-
-      - uses: toko-bifrost/ms-teams-deploy-card@master
-        if: always()
-        with:
-          github-token: ${{ github.token }}
-          webhook-uri: ${{ secrets.MSTEAMS_WEBHOOK }}
-
-      - name: Build image
-        id: build
+      - name: create string
         run: |
-          VERSION=${{ github.sha }}
-          IMAGE_NAME="docker.io/jgrumboe/random-logger"
-          echo ::set-output name=version::${VERSION}
-          echo ::set-output name=image::${IMAGE_NAME}
-          docker build -f Dockerfile -t "$IMAGE_NAME":"$VERSION" .
-
-      - name: Scan for vulnerabilities
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: '${{ steps.build.outputs.image }}:${{ steps.build.outputs.version }}'
-          format: 'table'
-          exit-code: '1'
-          ignore-unfixed: true
-          severity: 'CRITICAL,HIGH'
-
-      - uses: avakar/create-deployment@v1
-        with:
-          auto_merge: false
+          cat - > diffoutput.txt << EOF
+          :warning: Warning: renovate-config-validator spotted that some files need a config migration.
+          Checks don't break on warnings but you should be aware the warning and solve them, if possible.
+          
+          \`\`\`
+          --- a.json-original	2021-01-07 23:03:55.107563000 +0000
+          +++ a.json-migrated	2021-01-07 23:03:55.106563000 +0000
+          @@ -4,7 +4,7 @@
+                    "postUpdateOptions": ["yarnDedupeHighest"],
+                    "rangeStrategy": "replace",
+                    "rebaseWhen": "behind-base-branch",
+          -         "semanticCommits": true,
+          +         "semanticCommits": "enabled",
+                    "updateLockFiles": true,
+                    "prConcurrentLimit": 0,
+                    "prHourlyLimit": 0,
+          \`\`\`
+          \`\`\`
+          --- ux.json-original	2021-01-07 23:04:03.068103000 +0000
+          +++ ux.json-migrated	2021-01-07 23:04:03.067103000 +0000
+          @@ -4,7 +4,7 @@
+                    "postUpdateOptions": ["yarnDedupeHighest"],
+                    "rangeStrategy": "replace",
+                    "rebaseWhen": "behind-base-branch",
+          -         "semanticCommits": true,
+          +         "semanticCommits": "enabled",
+                    "updateLockFiles": true,
+                    "prConcurrentLimit": 0,
+                    "prHourlyLimit": 0,
+          \`\`\`
+          Have a nice day!
+          EOF
+      - name: comment PR
+        uses: machine-learning-apps/pr-comment@master
         env:
-          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          path: diffoutput.txt
